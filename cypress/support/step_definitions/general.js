@@ -1,27 +1,22 @@
-// import { defineSupportCode } from 'cucumber';
-const defineSupportCode = require('cucumber').defineSupportCode;
+Given(/^I launch "([^"]*)?"$/, function (url) {
+    cy.visit(url)
+})
 
+Then(/^go to the weather screen$/, function () {
+    cy.get('#orb-nav-links li.orb-nav-weather').click()
 
-defineSupportCode(function ({Given, Then}) {
-    Given(/^I launch "([^"]*)?"$/, function (url) {
-        browser.url(url);
-    })
+    // Should be on a new URL which includes '/commands/actions'
+    cy.url().should('include', '/weather')
+})
 
-    Then(/^go to the weather screen$/, function () {
-        var weatherLink = $('.orb-nav-weather');
-        weatherLink.waitForVisible(2000);
-        weatherLink.click();
-    })
+Then(/^search for weather by with postcode "([^"]*)?"$/, function (postcode) {
+    cy.get('#ls-c-search__input-label')
+        .type(postcode)
+        .should('have.value', postcode)
 
-    Then(/^search for weather by with postcode "([^"]*)?"$/, function (postcode) {
-        var weatherSearch = $('#ls-c-search__input-label');
-        weatherSearch.waitForVisible(2000);
-        weatherSearch.setValue(postcode);
-        browser.click('.ls-c-search__submit');
-    })
+    cy.get('.ls-c-search__submit').click()
+})
 
-    Then(/^I will see the results heading "([^"]*)?"$/, function(heading) {
-        browser.waitForVisible('#wr-location-name-id', 3000);
-        expect(browser.getText('h1#wr-location-name-id')).to.include(heading);
-    })
-});
+Then(/^I will see the results heading "([^"]*)?"$/, function (heading) {
+    cy.get('h1#wr-location-name-id').contains(heading)
+})
